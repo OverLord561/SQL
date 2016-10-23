@@ -1,18 +1,19 @@
-IF OBJECT_ID('Employee', 'U') IS NOT NULL
-DROP TABLE Employee;
+--IF OBJECT_ID('Employee', 'U') IS NOT NULL
+--DROP TABLE Employee;
 
-IF OBJECT_ID('Firm', 'U') IS NOT NULL
-DROP TABLE Firm;
+--IF OBJECT_ID('Firm', 'U') IS NOT NULL
+--DROP TABLE Firm;
 
-IF OBJECT_ID('ContactInfo', 'U') IS NOT NULL
-DROP TABLE ContactInfo;
+--IF OBJECT_ID('ContactInfo', 'U') IS NOT NULL
+--DROP TABLE ContactInfo;
 
-IF OBJECT_ID('EmployeeTelephone', 'U') IS NOT NULL
-DROP TABLE EmployeeTelephone;
+--IF OBJECT_ID('EmployeeTelephone', 'U') IS NOT NULL
+--DROP TABLE EmployeeTelephone;
 
 
 
--- Таблица Firm
+--TABLE Firm
+IF OBJECT_ID('Firm', 'U') IS NULL
 create table Firm
 (
   FirmId integer  NOT NULL primary key,
@@ -20,7 +21,8 @@ create table Firm
   FirmAdress  nVARCHAR(15)  
   );
 
--- Таблица Employee
+-- TABLE Employee
+IF OBJECT_ID('Employee', 'U') IS NULL
 create table Employee
 (
   EmployeeId    integer NOT NULL primary key,
@@ -30,7 +32,8 @@ create table Employee
 );
 
 
--- Таблица ContactInfo
+-- TABLE ContactInfo
+IF OBJECT_ID('ContactInfo', 'U') IS NULL
 create table ContactInfo
 (
   EmployeeId integer NOT NULL primary key REFERENCES Employee ,
@@ -39,7 +42,8 @@ create table ContactInfo
   
 );
   
--- Таблица EmployeeTelephone
+-- TABLE EmployeeTelephone
+IF OBJECT_ID('EmployeeTelephone', 'U') IS NULL
 create table EmployeeTelephone
 (
   EmployeeTelephoneId   integer  NOT NULL primary key,
@@ -88,3 +92,32 @@ commit;
 
 --Request
 select e.Name , e.Surname, c.Birthday, c.Adress, f.FirmName, f.FirmAdress, tel.Telephone, tel.SimCard  from employee e, contactinfo c, firm f, employeetelephone tel where  e.FirmId =f.FirmId and e.EmployeeId = c.EmployeeId and e.EmployeeId = tel.EmployeeId;
+
+
+--Add Storage Procedure
+create procedure EmployeeInsert  (
+@EmployeeId int,
+@Name nVARCHAR(15),
+@Surname nVARCHAR(15),
+@FirmId int
+                                 )
+
+AS
+
+begin
+  INSERT INTO Employee VALUES (
+  @EmployeeId,
+  @Name,
+  @Surname,
+  @FirmId
+                               );
+    
+end 
+
+
+--Execute storage procedure
+Execute [DB_optimization].[dbo].[EmployeeInsert] "6","Petrov","Roman", "2";
+
+delete Employee  where Employee.EmployeeId =6;
+
+Execute EmployeeInsert "6","Petrov","Roman", "2";
